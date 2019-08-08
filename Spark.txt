@@ -1,0 +1,12 @@
+Spark 1.2 has also introduced a new model for composing different machine learning modules into a Pipeline where each component interacts with the other via homogeneous APIs. Let's review the key concept introduced by the Spark ML APIs:
+
+	1. ML Dataset: Spark ML uses DataFrames for holding a variety of data types (columns can store text, features, true labels and predictions).
+	2. Transformer: A Transformer is an algorithm which can transform one DataFrame into another DataFrame (for instance an ML model is a Transformer which transforms a DataFrame with features into an DataFrame with predictions).
+	3. Estimator: An Estimator is an algorithm which can be fit on a DataFrame to produce a Transformer (for instance a learning algorithm is an Estimator which trains on a traing set and produces a model).
+	4. Pipeline: A Pipeline chains multiple Transformers and Estimators together to specify a machine learner workflow (for instance a whole pipeline can be passed as parameter to a function)
+	5. Param: All Transformers and Estimators now share a common homogeneous API for specifying parameters.
+
+When a pipeline is created, in particular, a Tokenier is connected to a hashing term frequency module, that is in tern connected to a linear regressor. The whole pipeline is a workflow which is then passed as parameter to a cross validator. The cross-validator performs an exhaustive grid search on a hyper-parameter space consisting in two different regularization values and two different numbers of maximum iterations. A BinaryClassificationEvaluator is used for comparing different configurations and this evaluator uses the areaUnderROC as a default metric.
+
+
+
