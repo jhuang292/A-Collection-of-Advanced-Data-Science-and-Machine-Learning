@@ -51,7 +51,7 @@ bce = BinaryClassificationEvaluator()
 # the crossvalidator takes the pipeline, the grid, and the evaluator
 # run on 2+ folds
 
-cv = CrossValidator().setEstimator(pipeline).setEstimatorParaMap(paramGrid).setEvaluator(bce).setNumFolds(2)
+cv = CrossValidator().setEstimator(pipeline).setEstimatorParamMaps(paramGrid).setEvaluator(bce).setNumFolds(2)
 
 cvModel = cv.fit(training)
 
