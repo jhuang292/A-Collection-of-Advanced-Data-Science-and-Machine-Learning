@@ -2,7 +2,7 @@ from pyspark import SparkContext
 from pyspark.sql import SQLContext
 from pyspark.sql import Row
 
-from pyspark.ml.feature import HashingTF, Tokenier
+from pyspark.ml.feature import HashingTF, Tokenizer
 from pyspark.ml.classification import LogisticRegression
 from pyspark.ml.tuning import ParamGridBuilder, CrossValidator
 from pyspark.ml import Pipeline
@@ -13,12 +13,12 @@ from pyspark.ml.evaluation import BinaryClassificationEvaluator
 sc = SparkContext()
 sqlContext = SQLContext(sc)
 training = sqlContext.createDataFrame([
-    (0L, "the eagles touch base", 1.0),
-    (1L, "matt dillon play movies", 0.0),
-    (2L, "touch down at 10", 1.0),
-    (3L, "tom cruise and", 0.0),
-    (4L, "baseball tournament", 1.0),
-    (5L, "angeline jolie", 0.0)],
+    (0, "the eagles touch base", 1.0),
+    (1, "matt dillon play movies", 0.0),
+    (2, "touch down at 10", 1.0),
+    (3, "tom cruise and", 0.0),
+    (4, "baseball tournament", 1.0),
+    (5, "angeline jolie", 0.0)],
     ["id", "text", "label"])
 
 # ML pipeline, tree stages: tokenizer, hashingTF, and lr.
@@ -32,7 +32,13 @@ lr = LogisticRegression(maxIter=10, regParam=0.01)
 pipeline = Pipeline().setStages([tokenizer, hashingTF, lr])
 
 # build the parameter grid
-paramGrid = ParamGridBuilder().baseOn({lr.labelCol: 'label'}).baseOn({lr.predictionCol, 'predic'}).addGrid(lr.regParam, [1.0, 2.0]).addGrid(lr.maxIter, [1,5]).build()
+paramGrid = ParamGridBuilder()\
+        .baseOn({lr.labelCol: 'label'})\
+        .baseOn({lr.predictionCol, 'predic'})\
+        .addGrid(lr.regParam, [1.0, 2.0])\
+        .addGrid(lr.maxIter, [1,5])\
+        .build()
+        
 expected = [{lr.regParam: 1.0, lr.maxIter:1, lr.labelCol: 'label', lr.predictionCol: 'predic'},
         {lr.regParam: 2.0, lr.maxIter: 1, lr.labelCol: 'label', lr.predictionCol: 'predic'},
         {lr.regParam: 1.0, lr.maxIter: 5, lr.labelCol: 'label', lr.predictionCol: 'predic'},
@@ -56,4 +62,13 @@ print(cv.getEstimatorParamMaps())
 
 # create the toy test documents
 
-test = sqlContext.createDataFrame([(4L, "tom cruise"),])
+test = sqlContext.createDataFrame([
+    (4, "tom cruise"),
+    (5, "played baseball")],
+    ["id", "text"])
+
+prediction = cvModel.transform(test)
+
+selected = prediction.select("id", "text", "probability", "predic")
+for row in selected.collect():
+    print(row)
