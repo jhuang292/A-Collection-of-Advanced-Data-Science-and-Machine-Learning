@@ -36,8 +36,7 @@ paramGrid = ParamGridBuilder()\
         .baseOn({lr.labelCol: 'label'})\
         .baseOn({lr.predictionCol, 'predic'})\
         .addGrid(lr.regParam, [1.0, 2.0])\
-        .addGrid(lr.maxIter, [1,5])\
-        .build()
+        .addGrid(lr.maxIter, [1, 5]).build()
         
 expected = [{lr.regParam: 1.0, lr.maxIter:1, lr.labelCol: 'label', lr.predictionCol: 'predic'},
         {lr.regParam: 2.0, lr.maxIter: 1, lr.labelCol: 'label', lr.predictionCol: 'predic'},
